@@ -26,11 +26,11 @@ def main():
     chrome_options.add_argument("--disable-infobars")    
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("start-maximized")
-    chrome_options.add_argument('--headless')
+    # chrome_options.add_argument('--headless')
     chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage') # for interface progressing
-    
-    driver = webdriver.Chrome(ChromeDriverManager().install() ,chrome_options=chrome_options)
+    # chrome_options.add_argument('--disable-dev-shm-usage') # for interface progressing
+        
+    driver = webdriver.Chrome(ChromeDriverManager().install() ,chrome_options=chrome_options)    
     print('Driver Start Execute')
     driver.get('https://www.facebook.com/')
 
@@ -43,36 +43,28 @@ def main():
     driver.get('https://www.facebook.com/groups/817620721658179')    
     soup = BeautifulSoup(driver.page_source, 'html.parser')
 
-    js = 'window.scrollTo(0, document.body.scrollHeight)'
+    js = 'window.scrollTo(0, document.body.scrollHeight)'    
+    postN = 0
 
-    postList = soup.find_all('span', class_='d2edcug0 hpfvmrgz qv66sw1b c1et5uql b0tq1wua a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d9wwppkn fe6kdd0r mau55g9w c8b282yb hrzyx87i jq4qci2q a3bd9o3v knj5qynh oo9gr5id hzawbc8m')
-    seeMore = driver.find_elements_by_link_text('See More')
-    [more.click() for more in seeMore]
-    postList = soup.find_all('span', class_='d2edcug0 hpfvmrgz qv66sw1b c1et5uql b0tq1wua a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d9wwppkn fe6kdd0r mau55g9w c8b282yb hrzyx87i jq4qci2q a3bd9o3v knj5qynh oo9gr5id hzawbc8m')
-    postN = len(postList)
-
-    while postN < 50:
-        driver.execute_script(js)        
+    while postN < 10:
+        driver.execute_script(js)
+        time.sleep(1)   
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        seeMore = driver.find_elements_by_link_text('See More')
-        [more.click() for more in seeMore]
+
+        # seeMore = driver.find_element_by_css_selector("div[class='oajrlxb2 g5ia77u1 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 nc684nl6 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso i1ao9s8h esuyzwwr f1sip0of lzcic4wl oo9gr5id gpro0wi8 lrazzd5p']").click()
+        # for more in seeMore:
+        #     more.click()
+
         postList = soup.find_all('span', class_='d2edcug0 hpfvmrgz qv66sw1b c1et5uql b0tq1wua a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d9wwppkn fe6kdd0r mau55g9w c8b282yb hrzyx87i jq4qci2q a3bd9o3v knj5qynh oo9gr5id hzawbc8m')
-        seeMore_content = soup.find_all('div', class_='o9v6fnle cxmmr5t8 oygrvhab hcukyx3x c1et5uql ii04i59q')
         postN = len(postList)
-        seeMoreN = len(seeMore_content)
+
         print(postN)
         time.sleep(1)
     
     for post in postList:
         print('\n======================================================')
-        print(post.text.strip('See More'))
-        # try:
-        #     seeMore_content = soup.find_all('div', class_='o9v6fnle cxmmr5t8 oygrvhab hcukyx3x c1et5uql ii04i59q')
-        #     [print(s_c.text+'\n') for s_c in seeMore_content]
-        # except:
-        #     continue
-            
-
+        print(post.text)
+        
 
     driver.quit()
     print('Driver Stop Execute')    
