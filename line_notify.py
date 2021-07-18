@@ -1,4 +1,3 @@
-from crawler import main
 import requests
 
 def lineNotifyMessage(token, msg):
@@ -14,9 +13,4 @@ def lineNotifyMessage(token, msg):
 
     print(r.status_code)
 
-
-if __name__ == "__main__":
-    
-    token = 'pj4zAv0SHrx80RGRQ3gINSg6nfOBbzgLdgsReqQGxNN'
-    msg = 'Testing!'
-    lineNotifyMessage(token, msg)
+lineNotifyMessage('pj4zAv0SHrx80RGRQ3gINSg6nfOBbzgLdgsReqQGxNN','msg')

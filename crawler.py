@@ -16,12 +16,26 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 
+
+def lineNotifyMessage(token, msg):
+    headers = {
+        "Authorization": "Bearer " + token        
+    }
+
+    payload = {
+        "message": msg
+    }
+
+    r = requests.post('https://notify-api.line.me/api/notify', headers=headers, params=payload)
+    print(r.status_code)
+
 def main():
     # Getting and setup arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-a', '--account' , required=True, type=str, help='facebook account')
     parser.add_argument('-p', '--password' , required=True, type=str, help='facebook password')
     args = parser.parse_args()
+    token = 'pj4zAv0SHrx80RGRQ3gINSg6nfOBbzgLdgsReqQGxNN'
 
     # Chrome driver options    
     chrome_options = webdriver.ChromeOptions()
@@ -48,44 +62,44 @@ def main():
 
     # Switch to '清交二手版' fb page
     url = 'https://www.facebook.com/groups/817620721658179'
-    driver.get('https://www.facebook.com/groups/817620721658179')    
+    driver.get(url)
     time.sleep(1)
 
     # Global variables
     js = 'window.scrollTo(0, document.body.scrollHeight)'    
     postNumber = 5
     counter = 0
-    
-    
-    
-
+            
     # Get post content
     while counter < postNumber:
         # Expanse windows scroll page and release 'See More' content
         driver.execute_script(js)
-        time.sleep(1)
-        links = driver.find_elements_by_xpath('//div[contains(text(),"See More")]')                    
+        time.sleep(3)
+        links = driver.find_elements_by_xpath('//div[contains(text(),"See More")]')           
         for link in links:
             try:                
                 link.click()
             except:
-                print('not work')        
-        print('Expanse post done')
-
-        soup = BeautifulSoup(driver.page_source, 'html.parser')        
-        postList = soup.find_all('div', class_='ecm0bbzt hv4rvrfc e5nlhep0 dati1w0a')
-        counter = len(postList)
+                pass
+        
         time.sleep(1)
+        soup = BeautifulSoup(driver.page_source, 'html.parser')        
+        postList = soup.find_all('span', class_='d2edcug0 hpfvmrgz qv66sw1b c1et5uql b0tq1wua a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d9wwppkn fe6kdd0r mau55g9w c8b282yb hrzyx87i jq4qci2q a3bd9o3v knj5qynh oo9gr5id hzawbc8m')
+        counter = len(postList)
+        print(counter)
+        # time.sleep(1)
     
     
     # Print post content
     for post in postList:
-        print('\n=======================')
-        if "Unread" not in post.text:
-            print(post.text)        
+        print('\n=======================')        
+        if not any([ignore_word in post.text for ignore_word in ["Unread", "posts", "See More"]]):        
+            print(post.text)
+            time.sleep(1)
+            lineNotifyMessage(token, post.text)
 
     # Quit driver
-    time.sleep(30)    
+    time.sleep(1)    
     driver.quit()
     print('\n======Driver Stop Execute======\n')
 
