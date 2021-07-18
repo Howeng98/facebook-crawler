@@ -8,16 +8,19 @@ This project target goal is help me to crawl down all the information that I wan
   - **LINE Notify account**
 
 # Build
+
 1.Install requirements.txt
+
 ```
 pip3 install -r requirements.txt
 ```
 
 2.Prepare LINE-notify token
+  
+  [How to get LINE-notify token](https://bustlec.github.io/note/2018/07/10/line-notify-using-python/)
+  
+3.Run
 
-[How to get LINE-notify token](https://bustlec.github.io/note/2018/07/10/line-notify-using-python/)
-
-3. Run
 ```
 python3 crawler.py -a [facebook username/email address] -p [facebook password]
 ```
