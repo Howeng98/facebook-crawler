@@ -76,8 +76,7 @@ def main():
         postList = soup.find_all('div', class_='ecm0bbzt hv4rvrfc e5nlhep0 dati1w0a')
         counter = len(postList)
         time.sleep(1)
-        # //*[@id="jsc_c_2p"]
-        # //*[@id="jsc_c_3b"]
+    
     
     # Print post content
     for post in postList:
