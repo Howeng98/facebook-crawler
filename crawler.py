@@ -1,20 +1,13 @@
 import requests
-import pandas
-import os
-import sys
-import re
-import random
-from selenium import webdriver
-from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup, element
 import time
 import argparse
-from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+from datetime import datetime
+
 
 
 def lineNotifyMessage(token, msg):
@@ -67,7 +60,7 @@ def main():
 
     # Global variables
     js = 'window.scrollTo(0, document.body.scrollHeight)'    
-    postNumber = 5
+    postNumber = 10
     counter = 0
             
     # Get post content
@@ -84,19 +77,41 @@ def main():
         
         time.sleep(1)
         soup = BeautifulSoup(driver.page_source, 'html.parser')        
-        postList = soup.find_all('span', class_='d2edcug0 hpfvmrgz qv66sw1b c1et5uql b0tq1wua a8c37x1j keod5gw0 nxhoafnm aigsh9s9 d9wwppkn fe6kdd0r mau55g9w c8b282yb hrzyx87i jq4qci2q a3bd9o3v knj5qynh oo9gr5id hzawbc8m')
+        postList = soup.find_all('div', class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
+
+        # postTime = soup.find_all('a', class_='oajrlxb2 g5ia77u1 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 nc684nl6 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso i1ao9s8h esuyzwwr f1sip0of lzcic4wl gmql0nx0 gpro0wi8 b1v8xokw')
+
+        postLink = soup.find_all('div', class_='du4w35lb k4urcfbm l9j0dhe7 sjgh65i0')
         counter = len(postList)
         print(counter)
         # time.sleep(1)
     
-    
+    keyword = [     
+        '螢幕',
+        '家教',
+        '鏡頭',
+        '顯卡',
+        'GeForce',
+        'BTS',
+        'Airpod'
+    ]
+
     # Print post content
-    for post in postList:
+    for idx, post in enumerate(postList):
         print('\n=======================')        
-        if not any([ignore_word in post.text for ignore_word in ["Unread", "posts", "See More"]]):        
-            print(post.text)
-            time.sleep(1)
-            lineNotifyMessage(token, post.text)
+        if not any([ignore_word in post.text for ignore_word in ["Unread", "posts", "See More"]]):
+            # print(post.text)            
+            soup.findall()
+            # if any([ky in post.text for ky in keyword]):
+            #     time.sleep(1)
+
+            #     lineNotifyMessage(token, post.text)
+            #     dateTime = datetime.now()
+            #     timestamp = dateTime.strftime("%d-%b-%Y | %H:%M:%S.%f")
+            #     print(timestamp)
+            #     print(post.text)
+
+            
 
     # Quit driver
     time.sleep(1)    
