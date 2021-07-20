@@ -1,6 +1,6 @@
 # Facebook Private Group Crawler
 
-This project target goal is help me to crawl down all the information that I want from ``Facebook private group``. Filter out the post contain specific **target word** , send them to user's ``LINE``.
+This project target goal is help me to crawl down all the information that I want from ``Facebook private group``. Filter out the post that contain specific ``target keyword`` , save data into ``Firebase Realtime Database`` and notify user by ``LINE``.
 
 # Environment
   - **Python 3.8.3** or higher
