@@ -1,21 +1,18 @@
 import requests
 import time
-import re
 import argparse
+import firebase_admin
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup, NavigableString, Tag
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
 from datetime import datetime
-import json
-import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import db
 
 
 
 def lineNotifyMessage(token, msg):
+    # send msg through LINE-Notify
     headers = {
         "Authorization": "Bearer " + token        
     }
@@ -25,7 +22,7 @@ def lineNotifyMessage(token, msg):
     }
 
     r = requests.post('https://notify-api.line.me/api/notify', headers=headers, params=payload)
-    print(r.status_code)
+    # print(r.status_code)
 
 def main():
     # Getting and setup arguments
@@ -34,7 +31,8 @@ def main():
     parser.add_argument('-p', '--password' , required=True, type=str, help='facebook password')
     args = parser.parse_args()
     
-    token = 'pj4zAv0SHrx80RGRQ3gINSg6nfOBbzgLdgsReqQGxNN'
+    # Line-Notify Token
+    token = ''
 
     # Chrome driver options    
     chrome_options = webdriver.ChromeOptions()
@@ -45,16 +43,15 @@ def main():
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("start-maximized")    
     chrome_options.add_argument('--no-sandbox')
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-dev-shm-usage') # for interface progressing
 
-    cred = credentials.Certificate('serviceAccount.json')
-
+    # Setup Firebase credentials certificate and header
+    cred = credentials.Certificate('serviceAccount.json') # get your own .json file 
     firebase_admin.initialize_app(cred, {
-        'databaseURL': 'https://facebook-crawler-2b822-default-rtdb.firebaseio.com/'
+        'databaseURL': 'https://facebook-crawler-2b822-default-rtdb.firebaseio.com/' # get your own databaseURL
     })
 
-    
     # Prepare driver
     driver = webdriver.Chrome(ChromeDriverManager().install() ,chrome_options=chrome_options)    
     print('\n======Driver Start Execute======\n')
@@ -66,21 +63,20 @@ def main():
     driver.find_element_by_css_selector("button[name='login']").click()
     time.sleep(1)
 
-    # Switch to '清交二手版' fb page
+    # Switch to '清交二手版' fb page (The page you want to crawl)
     url = 'https://www.facebook.com/groups/817620721658179'
     driver.get(url)
     time.sleep(1)
 
     # Global variables
     js = 'window.scrollTo(0, document.body.scrollHeight)'    
-    postNumber = 20
+    postNumber = 3 # How many post you want get
     counter = 0
             
     # Get post content
     while counter < postNumber:
         # Expanse windows scroll page and release 'See More' content
-        driver.execute_script(js)
-        # time.sleep(3)
+        driver.execute_script(js)        
         links = driver.find_elements_by_xpath('//div[contains(text(),"See More")]')           
         for link in links:
             try:                
@@ -91,13 +87,9 @@ def main():
         time.sleep(1)
         soup = BeautifulSoup(driver.page_source, 'html.parser')        
         postList = soup.find_all('div', class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
-        
-        po_link = soup.find_all('div', class_='ni8dbmo4 stjgntxs pmk7jnqg')
-
-        counter = len(postList)
-        # print(counter)
-        # time.sleep(1)
+        counter = len(postList)        
     
+    # Define your specific keyword in post that you looking for 
     keyword = [     
         '螢幕',
         '家教',
@@ -107,30 +99,22 @@ def main():
         'BTS',
         'Airpod'
     ]
-    # print('PostList')
-    # print(len(postList))
-    # print('PostLink')
-    # print(len(po_link))
-
+    
+    # Extract and process post id to generate post URL link
     # for link in po_link:
     #     result = re.search('pcb.(.*?)&amp',str(link.a)).group(1).split('/')[0]
     #     print(result)
     #     print('\n')
     
     # Print post content
-    for idx, post in enumerate(postList):
-        # print('\n=======================')        
-        if not any([ignore_word in post.text for ignore_word in ["Unread", "posts", "See More"]]):            
-            # print(post.text)                        
-            if any([ky in post.text for ky in keyword]):
-                # time.sleep(1)
-
-                
+    for idx, post in enumerate(postList):           
+        if not any([ignore_word in post.text for ignore_word in ["Unread", "posts", "See More"]]):                                          
+            if any([ky in post.text for ky in keyword]):                
+            
                 dateTime = datetime.now()
                 datestamp = dateTime.strftime("%d-%b-%Y")
                 timestamp = dateTime.strftime("%H:%M:%S.%f")
-                # print(timestamp)
-                # print(post.text)
+
                 for ky in keyword:
                     if ky in post.text:
                         k = '' + ky
@@ -138,8 +122,7 @@ def main():
                 ref = db.reference('/'+datestamp+'/'+k+'/')
                 try:
                     count = len(ref.get())
-                    # check post exist already or not
-                    # print('here')
+                    # check post exist already or not                    
                     for exist_post_idx in range(count):
                         IS_EXIST = False
                         exist_post_data = db.reference('/'+datestamp+'/'+k+'/'+str(exist_post_idx)+'/').get()
@@ -165,8 +148,7 @@ def main():
                     post = {                                   
                         'timestamp': timestamp,            
                         'content': post.text
-                    }
-                    # print('first post')
+                    }                    
                     ref.set(post)
                                 
 
