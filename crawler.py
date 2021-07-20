@@ -1,12 +1,17 @@
 import requests
 import time
+import re
 import argparse
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
+import json
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import db
 
 
 
@@ -28,6 +33,7 @@ def main():
     parser.add_argument('-a', '--account' , required=True, type=str, help='facebook account')
     parser.add_argument('-p', '--password' , required=True, type=str, help='facebook password')
     args = parser.parse_args()
+    
     token = 'pj4zAv0SHrx80RGRQ3gINSg6nfOBbzgLdgsReqQGxNN'
 
     # Chrome driver options    
@@ -40,7 +46,14 @@ def main():
     chrome_options.add_argument("start-maximized")    
     chrome_options.add_argument('--no-sandbox')
     # chrome_options.add_argument('--headless')
-    # chrome_options.add_argument('--disable-dev-shm-usage') # for interface progressing
+    chrome_options.add_argument('--disable-dev-shm-usage') # for interface progressing
+
+    cred = credentials.Certificate('serviceAccount.json')
+
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': 'https://facebook-crawler-2b822-default-rtdb.firebaseio.com/'
+    })
+
     
     # Prepare driver
     driver = webdriver.Chrome(ChromeDriverManager().install() ,chrome_options=chrome_options)    
@@ -60,14 +73,14 @@ def main():
 
     # Global variables
     js = 'window.scrollTo(0, document.body.scrollHeight)'    
-    postNumber = 10
+    postNumber = 20
     counter = 0
             
     # Get post content
     while counter < postNumber:
         # Expanse windows scroll page and release 'See More' content
         driver.execute_script(js)
-        time.sleep(3)
+        # time.sleep(3)
         links = driver.find_elements_by_xpath('//div[contains(text(),"See More")]')           
         for link in links:
             try:                
@@ -78,12 +91,11 @@ def main():
         time.sleep(1)
         soup = BeautifulSoup(driver.page_source, 'html.parser')        
         postList = soup.find_all('div', class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
+        
+        po_link = soup.find_all('div', class_='ni8dbmo4 stjgntxs pmk7jnqg')
 
-        # postTime = soup.find_all('a', class_='oajrlxb2 g5ia77u1 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 nc684nl6 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso i1ao9s8h esuyzwwr f1sip0of lzcic4wl gmql0nx0 gpro0wi8 b1v8xokw')
-
-        postLink = soup.find_all('div', class_='du4w35lb k4urcfbm l9j0dhe7 sjgh65i0')
         counter = len(postList)
-        print(counter)
+        # print(counter)
         # time.sleep(1)
     
     keyword = [     
@@ -95,23 +107,68 @@ def main():
         'BTS',
         'Airpod'
     ]
+    # print('PostList')
+    # print(len(postList))
+    # print('PostLink')
+    # print(len(po_link))
 
+    # for link in po_link:
+    #     result = re.search('pcb.(.*?)&amp',str(link.a)).group(1).split('/')[0]
+    #     print(result)
+    #     print('\n')
+    
     # Print post content
     for idx, post in enumerate(postList):
-        print('\n=======================')        
-        if not any([ignore_word in post.text for ignore_word in ["Unread", "posts", "See More"]]):
-            # print(post.text)            
-            soup.findall()
-            # if any([ky in post.text for ky in keyword]):
-            #     time.sleep(1)
+        # print('\n=======================')        
+        if not any([ignore_word in post.text for ignore_word in ["Unread", "posts", "See More"]]):            
+            # print(post.text)                        
+            if any([ky in post.text for ky in keyword]):
+                # time.sleep(1)
 
-            #     lineNotifyMessage(token, post.text)
-            #     dateTime = datetime.now()
-            #     timestamp = dateTime.strftime("%d-%b-%Y | %H:%M:%S.%f")
-            #     print(timestamp)
-            #     print(post.text)
+                
+                dateTime = datetime.now()
+                datestamp = dateTime.strftime("%d-%b-%Y")
+                timestamp = dateTime.strftime("%H:%M:%S.%f")
+                # print(timestamp)
+                # print(post.text)
+                for ky in keyword:
+                    if ky in post.text:
+                        k = '' + ky
 
-            
+                ref = db.reference('/'+datestamp+'/'+k+'/')
+                try:
+                    count = len(ref.get())
+                    # check post exist already or not
+                    # print('here')
+                    for exist_post_idx in range(count):
+                        IS_EXIST = False
+                        exist_post_data = db.reference('/'+datestamp+'/'+k+'/'+str(exist_post_idx)+'/').get()
+                        if post.text in exist_post_data['content']:
+                            # if it is exist, break for loop, and do nothing
+                            IS_EXIST = True
+                            break
+
+                    if IS_EXIST is False:                        
+                        ref = db.reference('/'+datestamp+'/'+k+'/'+str(count)+'/')
+                        post = {                                   
+                            'timestamp': timestamp,            
+                            'content': post.text
+                        }                    
+                        ref.set(post)
+                        # new post, send notification
+                        lineNotifyMessage(token, post.text)
+
+                except Exception as e:
+                    print(e)
+                    count = str(0)
+                    ref = db.reference('/'+datestamp+'/'+k+'/'+str(count)+'/')
+                    post = {                                   
+                        'timestamp': timestamp,            
+                        'content': post.text
+                    }
+                    # print('first post')
+                    ref.set(post)
+                                
 
     # Quit driver
     time.sleep(1)    
