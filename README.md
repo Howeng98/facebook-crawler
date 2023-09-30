@@ -46,8 +46,8 @@ python3 crawler.py -a [facebook username/email address] -p [facebook password]
 
 
 # Notes
-  1. You can set your **specific keyword** in the post that you looking for in the ``crawler.py``.
-  
+  1. You can set your **specific keyword** in the post that you are looking for in the ``crawler.py``.
+
   2. This script can work succesfully with **once** a time, and terminate. But cannot execute continuously because Facebook will block you down, and ask you to **verify and relogin** again. So after some consider, I'm not going to make extra features or functions to solve this contidion. There have some better way to accomplish such goal on other website, but not in Facebook. ``API`` is recommended for these requires, but you have to create your own functions API in special require.
   
   3. Atleast in this script, I had learned most of the **crawl** and **scrapy** skill so it is not meaningless to me.
