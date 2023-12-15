@@ -4,14 +4,6 @@
 
 [![Github all releases](https://hits.sh/drive.google.com/drive/folders/1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8.svg)]
 
-## Anomaly Backbone Checkpoint Download  
-  |   Description  | Weights Download |
-  | :------------: | :--------------: |
-  | MVTecAD ResNet18 | [Download Link](https://drive.google.com/drive/folders/1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8?usp=sharing) |
-  | IndustrialDataset ResNet18 | [Download Link](https://drive.google.com/drive/folders/1knOHNj5U5Ya6qRjhD3hUo-K4F_BTg0YS?usp=sharing) |
-
-
-
 This project target goal is help me to crawl down all the information that I want from ``Facebook private group``. Filter out the post that contain specific ``target keyword`` , save data into ``Firebase Realtime Database`` and notify user by ``LINE``.
 
 # Environment
