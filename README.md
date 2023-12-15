@@ -3,6 +3,7 @@
 <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fdrive.google.com%2Fdrive%2Ffolders%2F1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false"/></a>
 <a href="https://hits.sh/drive.google.com/drive/folders/1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8/"><img alt="Hits" src="https://hits.sh/drive.google.com/drive/folders/1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8.svg?label=Click%20count"/></a>
 <a href="https://www.freecounterstat.com" title="website hits counter"><img src="https://counter7.optistats.ovh/private/freecounterstat.php?c=mgdy142qy8zjkecjb5et7366kh4m5z1p" border="0" title="website hits counter" alt="website hits counter"></a>
+<a href="https://www.freecounterstat.com" title="page counter"><img src="https://counter7.optistats.ovh/private/freecounterstat.php?c=mp5chauldzbtp2u5khcf32g8rarbbyqh" border="0" title="page counter" alt="page counter"></a>
 
 
 This project target goal is help me to crawl down all the information that I want from ``Facebook private group``. Filter out the post that contain specific ``target keyword`` , save data into ``Firebase Realtime Database`` and notify user by ``LINE``.
