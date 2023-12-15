@@ -4,8 +4,6 @@
 
 [![Hits](https://hits.sh/drive.google.com/drive/folders/1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8.svg?label=Click%20count)](https://hits.sh/drive.google.com/drive/folders/1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8/)
 
-[![Github all releases](https://hits.sh/drive.google.com/drive/folders/1T-SRSi5D_dyvJ-HqAEtiHGYdiWfJ6_q8.svg)]
-
 This project target goal is help me to crawl down all the information that I want from ``Facebook private group``. Filter out the post that contain specific ``target keyword`` , save data into ``Firebase Realtime Database`` and notify user by ``LINE``.
 
 # Environment
